@@ -7,6 +7,10 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
     private IUserRepository? _userRepository;
+    private IVehicleModelRepository? _vehicleModelRepository;
+    private IVehicleVariantRepository? _vehicleVariantRepository;
+    private IVehicleColorRepository? _vehicleColorRepository;
+    private IVehicleInventoryRepository? _vehicleInventoryRepository;
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -14,6 +18,10 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public IUserRepository Users => _userRepository ??= new UserRepository(_context);
+    public IVehicleModelRepository VehicleModels => _vehicleModelRepository ??= new VehicleModelRepository(_context);
+    public IVehicleVariantRepository VehicleVariants => _vehicleVariantRepository ??= new VehicleVariantRepository(_context);
+    public IVehicleColorRepository VehicleColors => _vehicleColorRepository ??= new VehicleColorRepository(_context);
+    public IVehicleInventoryRepository VehicleInventories => _vehicleInventoryRepository ??= new VehicleInventoryRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

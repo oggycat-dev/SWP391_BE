@@ -1,0 +1,12 @@
+using CleanArchitectureTemplate.Application.Common.Models;
+using CleanArchitectureTemplate.Application.Common.DTOs.Vehicles;
+
+namespace CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventories;
+
+public class GetVehicleInventoriesQuery : PaginatedQuery<VehicleInventoryDto>
+{
+    public Guid? VariantId { get; set; }
+    public Guid? ColorId { get; set; }
+    public string? Status { get; set; }
+    public string? WarehouseLocation { get; set; }
+}
