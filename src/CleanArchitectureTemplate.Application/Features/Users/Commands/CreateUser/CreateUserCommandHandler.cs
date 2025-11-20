@@ -50,7 +50,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiRe
             FirstName = request.FirstName,
             LastName = request.LastName,
             PhoneNumber = request.PhoneNumber,
-            Role = Enum.TryParse<UserRole>(request.Role, out var role) ? role : UserRole.User,
+            Role = Enum.TryParse<UserRole>(request.Role, out var role) ? role : UserRole.DealerStaff,
             EmailConfirmed = false,
             IsActive = true
         };

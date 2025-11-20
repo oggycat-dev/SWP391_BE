@@ -1,0 +1,58 @@
+using CleanArchitectureTemplate.Domain.Commons;
+using CleanArchitectureTemplate.Domain.Enums;
+
+namespace CleanArchitectureTemplate.Domain.Entities;
+
+/// <summary>
+/// Đơn hàng
+/// </summary>
+public class Order : BaseEntity
+{
+    public string OrderNumber { get; set; } = string.Empty;
+    public Guid? QuotationId { get; set; }
+    public Guid CustomerId { get; set; }
+    public Guid DealerId { get; set; }
+    public Guid DealerStaffId { get; set; }
+    
+    public Guid VehicleVariantId { get; set; }
+    public Guid VehicleColorId { get; set; }
+    public Guid? VehicleInventoryId { get; set; } // Xe cụ thể được gán
+    
+    public OrderStatus Status { get; set; } = OrderStatus.Draft;
+    public DateTime OrderDate { get; set; }
+    public DateTime? ApprovedDate { get; set; }
+    public DateTime? DeliveryDate { get; set; }
+    
+    // Pricing
+    public decimal BasePrice { get; set; }
+    public decimal ColorPrice { get; set; }
+    public decimal DealerDiscount { get; set; }
+    public decimal PromotionDiscount { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal TotalAmount { get; set; }
+    
+    // Payment
+    public PaymentMethod PaymentMethod { get; set; }
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+    public decimal PaidAmount { get; set; }
+    public decimal RemainingAmount { get; set; }
+    
+    // Installment
+    public bool IsInstallment { get; set; }
+    
+    public string Notes { get; set; } = string.Empty;
+    
+    // Navigation properties
+    public Quotation? Quotation { get; set; }
+    public Customer Customer { get; set; } = null!;
+    public Dealer Dealer { get; set; } = null!;
+    public DealerStaff DealerStaff { get; set; } = null!;
+    public VehicleVariant VehicleVariant { get; set; } = null!;
+    public VehicleColor VehicleColor { get; set; } = null!;
+    public VehicleInventory? VehicleInventory { get; set; }
+    
+    public SalesContract? SalesContract { get; set; }
+    public Delivery? Delivery { get; set; }
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    public ICollection<OrderPromotion> Promotions { get; set; } = new List<OrderPromotion>();
+}

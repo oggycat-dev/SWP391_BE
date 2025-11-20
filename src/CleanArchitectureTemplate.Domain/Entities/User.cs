@@ -41,7 +41,7 @@ public class User : BaseEntity
     /// <summary>
     /// User's role
     /// </summary>
-    public UserRole Role { get; set; } = UserRole.User;
+    public UserRole Role { get; set; } = UserRole.DealerStaff;
     
     /// <summary>
     /// User's hashed password

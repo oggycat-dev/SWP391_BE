@@ -1,24 +1,39 @@
 namespace CleanArchitectureTemplate.Domain.Enums;
 
 /// <summary>
-/// User roles enumeration
+/// User roles enumeration for Electric Vehicle Dealer Management System
 /// </summary>
 public enum UserRole
 {
     /// <summary>
-    /// Regular user
+    /// System Administrator - Full access to all features
     /// </summary>
-    User = 0,
-    
+    Admin = 0,
+
     /// <summary>
-    /// Administrator user
+    /// EVM Staff - Electric Vehicle Manufacturer staff
     /// </summary>
-    Admin = 1,
-    
+    EVMStaff = 1,
+
     /// <summary>
-    /// Moderator user
+    /// EVM Manager - Electric Vehicle Manufacturer manager
     /// </summary>
-    Moderator = 2
+    EVMManager = 2,
+
+    /// <summary>
+    /// Dealer Manager - Manages dealer operations
+    /// </summary>
+    DealerManager = 3,
+
+    /// <summary>
+    /// Dealer Staff - Sales staff at dealer
+    /// </summary>
+    DealerStaff = 4,
+
+    /// <summary>
+    /// Customer - End customer (optional for customer portal)
+    /// </summary>
+    Customer = 5
 }
 
 /// <summary>
