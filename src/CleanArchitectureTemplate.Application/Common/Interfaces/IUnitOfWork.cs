@@ -40,6 +40,34 @@ public interface IVehicleInventoryRepository : IRepository<VehicleInventory>
     Task<List<VehicleInventory>> GetAllWithDetailsAsync();
 }
 
+public interface IDealerRepository : IRepository<Dealer>
+{
+    Task<Dealer?> GetByDealerCodeAsync(string dealerCode);
+    Task<List<Dealer>> GetActiveDealersAsync();
+    Task<Dealer?> GetByIdWithDetailsAsync(Guid id);
+}
+
+public interface IDealerStaffRepository : IRepository<DealerStaff>
+{
+    Task<List<DealerStaff>> GetByDealerIdAsync(Guid dealerId);
+    Task<DealerStaff?> GetByUserIdAsync(Guid userId);
+    Task<DealerStaff?> GetByIdWithDetailsAsync(Guid id);
+}
+
+public interface IDealerContractRepository : IRepository<DealerContract>
+{
+    Task<DealerContract?> GetByContractNumberAsync(string contractNumber);
+    Task<List<DealerContract>> GetByDealerIdAsync(Guid dealerId);
+    Task<DealerContract?> GetActiveDealerContractAsync(Guid dealerId);
+}
+
+public interface IDealerDebtRepository : IRepository<DealerDebt>
+{
+    Task<List<DealerDebt>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<DealerDebt>> GetOverdueDebtsAsync();
+    Task<decimal> GetTotalDebtByDealerAsync(Guid dealerId);
+}
+
 public interface IUnitOfWork : IDisposable
 {
     IUserRepository Users { get; }
@@ -47,5 +75,9 @@ public interface IUnitOfWork : IDisposable
     IVehicleVariantRepository VehicleVariants { get; }
     IVehicleColorRepository VehicleColors { get; }
     IVehicleInventoryRepository VehicleInventories { get; }
+    IDealerRepository Dealers { get; }
+    IDealerStaffRepository DealerStaff { get; }
+    IDealerContractRepository DealerContracts { get; }
+    IDealerDebtRepository DealerDebts { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

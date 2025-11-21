@@ -11,6 +11,10 @@ public class UnitOfWork : IUnitOfWork
     private IVehicleVariantRepository? _vehicleVariantRepository;
     private IVehicleColorRepository? _vehicleColorRepository;
     private IVehicleInventoryRepository? _vehicleInventoryRepository;
+    private IDealerRepository? _dealerRepository;
+    private IDealerStaffRepository? _dealerStaffRepository;
+    private IDealerContractRepository? _dealerContractRepository;
+    private IDealerDebtRepository? _dealerDebtRepository;
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -22,6 +26,10 @@ public class UnitOfWork : IUnitOfWork
     public IVehicleVariantRepository VehicleVariants => _vehicleVariantRepository ??= new VehicleVariantRepository(_context);
     public IVehicleColorRepository VehicleColors => _vehicleColorRepository ??= new VehicleColorRepository(_context);
     public IVehicleInventoryRepository VehicleInventories => _vehicleInventoryRepository ??= new VehicleInventoryRepository(_context);
+    public IDealerRepository Dealers => _dealerRepository ??= new DealerRepository(_context);
+    public IDealerStaffRepository DealerStaff => _dealerStaffRepository ??= new DealerStaffRepository(_context);
+    public IDealerContractRepository DealerContracts => _dealerContractRepository ??= new DealerContractRepository(_context);
+    public IDealerDebtRepository DealerDebts => _dealerDebtRepository ??= new DealerDebtRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

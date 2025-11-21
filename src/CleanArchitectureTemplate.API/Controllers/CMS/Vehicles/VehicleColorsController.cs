@@ -10,11 +10,15 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.Dele
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleColors;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleColorById;
 
-namespace CleanArchitectureTemplate.API.Controllers.API;
+namespace CleanArchitectureTemplate.API.Controllers.CMS.Vehicles;
 
+/// <summary>
+/// CMS API for managing vehicle colors
+/// </summary>
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/cms/vehicles/colors")]
+[Authorize(Roles = "Admin,EVMManager,EVMStaff")]
+[ApiExplorerSettings(GroupName = "cms")]
 public class VehicleColorsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -25,7 +29,6 @@ public class VehicleColorsController : ControllerBase
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<PaginatedResult<VehicleColorDto>>>> GetVehicleColors(
         [FromQuery] GetVehicleColorsQuery query)
     {
@@ -35,7 +38,6 @@ public class VehicleColorsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<VehicleColorDto>>> GetVehicleColorById(Guid id)
     {
         var query = new GetVehicleColorByIdQuery { Id = id };

@@ -4,6 +4,7 @@ using CleanArchitectureTemplate.Domain.Entities;
 using CleanArchitectureTemplate.Domain.Enums;
 using CleanArchitectureTemplate.Application.Common.DTOs.Users;
 using CleanArchitectureTemplate.Application.Common.DTOs.Vehicles;
+using CleanArchitectureTemplate.Application.Common.DTOs.Dealers;
 
 namespace CleanArchitectureTemplate.Application.Common.Mappings;
 
@@ -71,5 +72,29 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.VariantName, opt => opt.MapFrom(src => src.Variant.VariantName))
             .ForMember(dest => dest.ColorName, opt => opt.MapFrom(src => src.Color.ColorName))
             .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer != null ? src.Dealer.Name : null));
+
+        // Dealer mappings
+        CreateMap<Dealer, DealerDto>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Name));
+
+        // Dealer Staff mappings
+        CreateMap<DealerStaff, DealerStaffDto>()
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+
+        // Dealer Contract mappings
+        CreateMap<DealerContract, DealerContractDto>()
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+        // Dealer Debt mappings
+        CreateMap<DealerDebt, DealerDebtDto>()
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.DebtType, opt => opt.MapFrom(src => "Dealer Debt"))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.TotalDebt))
+            .ForMember(dest => dest.RemainingAmount, opt => opt.MapFrom(src => src.TotalDebt - src.PaidAmount));
     }
 }

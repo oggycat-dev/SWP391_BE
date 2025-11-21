@@ -10,11 +10,15 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.Dele
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleVariants;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleVariantById;
 
-namespace CleanArchitectureTemplate.API.Controllers.API;
+namespace CleanArchitectureTemplate.API.Controllers.CMS.Vehicles;
 
+/// <summary>
+/// CMS API for managing vehicle variants
+/// </summary>
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/cms/vehicles/variants")]
+[Authorize(Roles = "Admin,EVMManager,EVMStaff")]
+[ApiExplorerSettings(GroupName = "cms")]
 public class VehicleVariantsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -25,7 +29,6 @@ public class VehicleVariantsController : ControllerBase
     }
 
     [HttpGet]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<PaginatedResult<VehicleVariantDto>>>> GetVehicleVariants(
         [FromQuery] GetVehicleVariantsQuery query)
     {
@@ -35,7 +38,6 @@ public class VehicleVariantsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<VehicleVariantDto>>> GetVehicleVariantById(Guid id)
     {
         var query = new GetVehicleVariantByIdQuery { Id = id };

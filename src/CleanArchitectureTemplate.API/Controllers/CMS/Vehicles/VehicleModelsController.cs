@@ -10,11 +10,15 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.Dele
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleModels;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleModelById;
 
-namespace CleanArchitectureTemplate.API.Controllers.API;
+namespace CleanArchitectureTemplate.API.Controllers.CMS.Vehicles;
 
+/// <summary>
+/// CMS API for managing vehicle models
+/// </summary>
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/cms/vehicles/models")]
+[Authorize(Roles = "Admin,EVMManager,EVMStaff")]
+[ApiExplorerSettings(GroupName = "cms")]
 public class VehicleModelsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -28,7 +32,6 @@ public class VehicleModelsController : ControllerBase
     /// Get all vehicle models with pagination and filters
     /// </summary>
     [HttpGet]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<PaginatedResult<VehicleModelDto>>>> GetVehicleModels(
         [FromQuery] GetVehicleModelsQuery query)
     {
@@ -41,7 +44,6 @@ public class VehicleModelsController : ControllerBase
     /// Get vehicle model by ID
     /// </summary>
     [HttpGet("{id:guid}")]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<VehicleModelDto>>> GetVehicleModelById(Guid id)
     {
         var query = new GetVehicleModelByIdQuery { Id = id };
@@ -53,9 +55,6 @@ public class VehicleModelsController : ControllerBase
     /// <summary>
     /// Create new vehicle model
     /// </summary>
-    /// <remarks>
-    /// Roles: Admin, EVMStaff
-    /// </remarks>
     [HttpPost]
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<VehicleModelDto>>> CreateVehicleModel(
@@ -69,9 +68,6 @@ public class VehicleModelsController : ControllerBase
     /// <summary>
     /// Update vehicle model
     /// </summary>
-    /// <remarks>
-    /// Roles: Admin, EVMStaff
-    /// </remarks>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<VehicleModelDto>>> UpdateVehicleModel(
@@ -91,9 +87,6 @@ public class VehicleModelsController : ControllerBase
     /// <summary>
     /// Delete vehicle model
     /// </summary>
-    /// <remarks>
-    /// Roles: Admin
-    /// </remarks>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ApiResponse<bool>>> DeleteVehicleModel(Guid id)

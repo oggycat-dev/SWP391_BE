@@ -19,25 +19,12 @@ public static class SwaggerConfiguration
     {
         services.AddSwaggerGen(c =>
         {
-            // API Document (Public/User APIs)
-            c.SwaggerDoc("api", new OpenApiInfo
-            {
-                Title = "Clean Architecture Template - User API",
-                Version = "v1",
-                Description = "Public APIs for user authentication and general operations",
-                Contact = new OpenApiContact
-                {
-                    Name = "Developer",
-                    Email = "developer@example.com"
-                }
-            });
-
-            // CMS Document (Admin APIs)
+            // CMS Document (Admin & EVM Management APIs)
             c.SwaggerDoc("cms", new OpenApiInfo
             {
                 Title = "Clean Architecture Template - CMS API",
                 Version = "v1",
-                Description = "Admin APIs for content management system (CMS)",
+                Description = "Admin & EVM Management APIs for managing vehicles, dealers, and system operations",
                 Contact = new OpenApiContact
                 {
                     Name = "Developer",
@@ -45,23 +32,48 @@ public static class SwaggerConfiguration
                 }
             });
 
-            // Group APIs by path
+            // Dealer Document (Dealer Management APIs)
+            c.SwaggerDoc("dealer", new OpenApiInfo
+            {
+                Title = "Clean Architecture Template - Dealer API",
+                Version = "v1",
+                Description = "APIs for dealer managers and staff to manage their operations",
+                Contact = new OpenApiContact
+                {
+                    Name = "Developer",
+                    Email = "developer@example.com"
+                }
+            });
+
+            // Customer Document (Customer APIs)
+            c.SwaggerDoc("customer", new OpenApiInfo
+            {
+                Title = "Clean Architecture Template - Customer API",
+                Version = "v1",
+                Description = "Public APIs for customer operations including authentication, vehicle browsing, and orders",
+                Contact = new OpenApiContact
+                {
+                    Name = "Developer",
+                    Email = "developer@example.com"
+                }
+            });
+
+            // Group APIs by ApiExplorerSettings GroupName attribute
             c.DocInclusionPredicate((docName, apiDesc) =>
             {
+                if (apiDesc.ActionDescriptor.EndpointMetadata
+                    .OfType<Microsoft.AspNetCore.Mvc.ApiExplorerSettingsAttribute>()
+                    .FirstOrDefault()?.GroupName == docName)
+                {
+                    return true;
+                }
+
+                // Fallback: Include old API controllers in cms for backward compatibility
                 if (string.IsNullOrEmpty(apiDesc.RelativePath))
                     return false;
 
-                if (docName == "api")
-                {
-                    // Include only /api/Auth and other public APIs
-                    return apiDesc.RelativePath.StartsWith("api/Auth", StringComparison.OrdinalIgnoreCase) ||
-                           (apiDesc.RelativePath.StartsWith("api/", StringComparison.OrdinalIgnoreCase) &&
-                            !apiDesc.RelativePath.StartsWith("api/cms/", StringComparison.OrdinalIgnoreCase));
-                }
-
                 if (docName == "cms")
                 {
-                    // Include only /api/cms/* APIs
                     return apiDesc.RelativePath.StartsWith("api/cms/", StringComparison.OrdinalIgnoreCase);
                 }
 
@@ -79,11 +91,12 @@ public static class SwaggerConfiguration
             // Add JWT authentication to Swagger
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Description = "JWT Authorization header using the Bearer scheme. Enter your token in the text input below.",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -118,14 +131,17 @@ public static class SwaggerConfiguration
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                // User API endpoint
-                c.SwaggerEndpoint("/swagger/api/swagger.json", "User API v1");
-                
-                // CMS API endpoint
+                // CMS API endpoint (Admin & EVM)
                 c.SwaggerEndpoint("/swagger/cms/swagger.json", "CMS API v1");
                 
-                c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-                c.DisplayRequestDuration(); // Show request duration
+                // Dealer API endpoint
+                c.SwaggerEndpoint("/swagger/dealer/swagger.json", "Dealer API v1");
+                
+                // Customer API endpoint
+                c.SwaggerEndpoint("/swagger/customer/swagger.json", "Customer API v1");
+                
+                c.RoutePrefix = string.Empty;
+                c.DisplayRequestDuration();
             });
         }
 

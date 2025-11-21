@@ -10,11 +10,15 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.Allo
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventories;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventoryById;
 
-namespace CleanArchitectureTemplate.API.Controllers.API;
+namespace CleanArchitectureTemplate.API.Controllers.CMS.Vehicles;
 
+/// <summary>
+/// CMS API for managing vehicle inventories
+/// </summary>
 [ApiController]
-[Route("api/[controller]")]
-[Authorize]
+[Route("api/cms/vehicles/inventories")]
+[Authorize(Roles = "Admin,EVMManager,EVMStaff")]
+[ApiExplorerSettings(GroupName = "cms")]
 public class VehicleInventoriesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -25,7 +29,6 @@ public class VehicleInventoriesController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin,EVMStaff,EVMManager")]
     public async Task<ActionResult<ApiResponse<PaginatedResult<VehicleInventoryDto>>>> GetVehicleInventories(
         [FromQuery] GetVehicleInventoriesQuery query)
     {
@@ -35,7 +38,6 @@ public class VehicleInventoriesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "Admin,EVMStaff,EVMManager")]
     public async Task<ActionResult<ApiResponse<VehicleInventoryDto>>> GetVehicleInventoryById(Guid id)
     {
         var query = new GetVehicleInventoryByIdQuery { Id = id };
@@ -55,7 +57,6 @@ public class VehicleInventoriesController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/status")]
-    [Authorize(Roles = "Admin,EVMStaff,EVMManager")]
     public async Task<ActionResult<ApiResponse<bool>>> UpdateVehicleInventoryStatus(
         Guid id,
         [FromBody] UpdateVehicleInventoryStatusCommand command)
