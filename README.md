@@ -4,7 +4,7 @@ A .NET 8 Web API project following Clean Architecture principles with CQRS patte
 
 ## 🏗️ Architecture Overview
 
-This template implements Clean Architecture with the following layers
+This template implements Clean Architecture with the following layers:
 
 - **Domain Layer**: Contains enterprise business rules, entities, enums, and value objects
 - **Application Layer**: Contains application business rules, CQRS commands/queries, DTOs, and interfaces
