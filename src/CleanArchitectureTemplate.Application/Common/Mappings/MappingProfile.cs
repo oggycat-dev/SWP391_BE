@@ -5,6 +5,13 @@ using CleanArchitectureTemplate.Domain.Enums;
 using CleanArchitectureTemplate.Application.Common.DTOs.Users;
 using CleanArchitectureTemplate.Application.Common.DTOs.Vehicles;
 using CleanArchitectureTemplate.Application.Common.DTOs.Dealers;
+using CleanArchitectureTemplate.Application.Common.DTOs.Customers;
+using CleanArchitectureTemplate.Application.Common.DTOs.Quotations;
+using CleanArchitectureTemplate.Application.Common.DTOs.Orders;
+using CleanArchitectureTemplate.Application.Common.DTOs.Payments;
+using CleanArchitectureTemplate.Application.Common.DTOs.VehicleRequests;
+using CleanArchitectureTemplate.Application.Common.DTOs.TestDrives;
+using CleanArchitectureTemplate.Application.Common.DTOs.Sales;
 
 namespace CleanArchitectureTemplate.Application.Common.Mappings;
 
@@ -96,5 +103,57 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.TotalDebt))
             .ForMember(dest => dest.RemainingAmount, opt => opt.MapFrom(src => src.TotalDebt - src.PaidAmount));
+
+        // Customer mappings
+        CreateMap<Customer, CustomerDto>();
+
+        // Quotation mappings
+        CreateMap<Quotation, QuotationDto>()
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.VehicleVariantName, opt => opt.MapFrom(src => src.VehicleVariant.VariantName))
+            .ForMember(dest => dest.VehicleColorName, opt => opt.MapFrom(src => src.VehicleColor.ColorName));
+
+        // Order mappings
+        CreateMap<Order, OrderDto>()
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.VehicleVariantName, opt => opt.MapFrom(src => src.VehicleVariant.VariantName))
+            .ForMember(dest => dest.VehicleModelName, opt => opt.MapFrom(src => src.VehicleVariant.Model.ModelName))
+            .ForMember(dest => dest.VehicleColorName, opt => opt.MapFrom(src => src.VehicleColor.ColorName));
+
+        // Payment mappings
+        CreateMap<Payment, PaymentDto>()
+            .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Order.OrderNumber))
+            .ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.PaymentMethod));
+
+        // Installment Plan mappings
+        CreateMap<InstallmentPlan, InstallmentPlanDto>();
+
+        // Vehicle Request mappings
+        CreateMap<VehicleRequest, VehicleRequestDto>()
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.VehicleVariantName, opt => opt.MapFrom(src => src.VehicleVariant.VariantName))
+            .ForMember(dest => dest.VehicleModelName, opt => opt.MapFrom(src => src.VehicleVariant.Model.ModelName))
+            .ForMember(dest => dest.VehicleColorName, opt => opt.MapFrom(src => src.VehicleColor.ColorName));
+
+        // Test Drive mappings
+        CreateMap<TestDrive, TestDriveDto>()
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.VehicleVariantName, opt => opt.MapFrom(src => src.VehicleVariant.VariantName))
+            .ForMember(dest => dest.VehicleModelName, opt => opt.MapFrom(src => src.VehicleVariant.Model.ModelName))
+            .ForMember(dest => dest.AssignedStaffName, opt => opt.MapFrom(src => src.AssignedStaff != null ? src.AssignedStaff.User.FirstName + " " + src.AssignedStaff.User.LastName : null));
+
+        // Sales Contract mappings
+        CreateMap<SalesContract, SalesContractDto>()
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Order.Customer.FullName))
+            .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.Order.CustomerId))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Order.Dealer.Name))
+            .ForMember(dest => dest.DealerId, opt => opt.MapFrom(src => src.Order.DealerId))
+            .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Order.OrderNumber))
+            .ForMember(dest => dest.ContractDate, opt => opt.MapFrom(src => src.SignedDate))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
+            .ForMember(dest => dest.SpecialTerms, opt => opt.MapFrom(src => src.Terms));
     }
 }

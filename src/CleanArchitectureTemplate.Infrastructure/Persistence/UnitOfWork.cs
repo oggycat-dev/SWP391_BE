@@ -15,6 +15,15 @@ public class UnitOfWork : IUnitOfWork
     private IDealerStaffRepository? _dealerStaffRepository;
     private IDealerContractRepository? _dealerContractRepository;
     private IDealerDebtRepository? _dealerDebtRepository;
+    private ICustomerRepository? _customerRepository;
+    private IQuotationRepository? _quotationRepository;
+    private IOrderRepository? _orderRepository;
+    private IPaymentRepository? _paymentRepository;
+    private IInstallmentPlanRepository? _installmentPlanRepository;
+    private IVehicleRequestRepository? _vehicleRequestRepository;
+    private IPromotionRepository? _promotionRepository;
+    private ITestDriveRepository? _testDriveRepository;
+    private ISalesContractRepository? _salesContractRepository;
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -30,6 +39,15 @@ public class UnitOfWork : IUnitOfWork
     public IDealerStaffRepository DealerStaff => _dealerStaffRepository ??= new DealerStaffRepository(_context);
     public IDealerContractRepository DealerContracts => _dealerContractRepository ??= new DealerContractRepository(_context);
     public IDealerDebtRepository DealerDebts => _dealerDebtRepository ??= new DealerDebtRepository(_context);
+    public ICustomerRepository Customers => _customerRepository ??= new CustomerRepository(_context);
+    public IQuotationRepository Quotations => _quotationRepository ??= new QuotationRepository(_context);
+    public IOrderRepository Orders => _orderRepository ??= new OrderRepository(_context);
+    public IPaymentRepository Payments => _paymentRepository ??= new PaymentRepository(_context);
+    public IInstallmentPlanRepository InstallmentPlans => _installmentPlanRepository ??= new InstallmentPlanRepository(_context);
+    public IVehicleRequestRepository VehicleRequests => _vehicleRequestRepository ??= new VehicleRequestRepository(_context);
+    public IPromotionRepository Promotions => _promotionRepository ??= new PromotionRepository(_context);
+    public ITestDriveRepository TestDrives => _testDriveRepository ??= new TestDriveRepository(_context);
+    public ISalesContractRepository SalesContracts => _salesContractRepository ??= new SalesContractRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

@@ -68,6 +68,69 @@ public interface IDealerDebtRepository : IRepository<DealerDebt>
     Task<decimal> GetTotalDebtByDealerAsync(Guid dealerId);
 }
 
+public interface ICustomerRepository : IRepository<Customer>
+{
+    Task<Customer?> GetByCustomerCodeAsync(string customerCode);
+    Task<Customer?> GetByPhoneNumberAsync(string phoneNumber);
+    Task<List<Customer>> GetByDealerIdAsync(Guid dealerId);
+    Task<Customer?> GetByIdWithOrdersAsync(Guid id);
+}
+
+public interface IQuotationRepository : IRepository<Quotation>
+{
+    Task<Quotation?> GetByQuotationNumberAsync(string quotationNumber);
+    Task<List<Quotation>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<Quotation>> GetByCustomerIdAsync(Guid customerId);
+    Task<Quotation?> GetByIdWithDetailsAsync(Guid id);
+}
+
+public interface IOrderRepository : IRepository<Order>
+{
+    Task<Order?> GetByOrderNumberAsync(string orderNumber);
+    Task<List<Order>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<Order>> GetByCustomerIdAsync(Guid customerId);
+    Task<Order?> GetByIdWithDetailsAsync(Guid id);
+    Task<List<Order>> GetByDealerStaffIdAsync(Guid dealerStaffId);
+}
+
+public interface IPaymentRepository : IRepository<Payment>
+{
+    Task<List<Payment>> GetByOrderIdAsync(Guid orderId);
+    Task<decimal> GetTotalPaidByOrderIdAsync(Guid orderId);
+}
+
+public interface IInstallmentPlanRepository : IRepository<InstallmentPlan>
+{
+    Task<InstallmentPlan?> GetByOrderIdAsync(Guid orderId);
+    Task<List<InstallmentPlan>> GetOverdueInstallmentsAsync();
+}
+
+public interface IVehicleRequestRepository : IRepository<VehicleRequest>
+{
+    Task<VehicleRequest?> GetByRequestCodeAsync(string requestCode);
+    Task<List<VehicleRequest>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<VehicleRequest>> GetPendingRequestsAsync();
+}
+
+public interface IPromotionRepository : IRepository<Promotion>
+{
+    Task<Promotion?> GetByPromotionCodeAsync(string promotionCode);
+    Task<List<Promotion>> GetActivePromotionsAsync();
+}
+
+public interface ITestDriveRepository : IRepository<TestDrive>
+{
+    Task<List<TestDrive>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<TestDrive>> GetByCustomerIdAsync(Guid customerId);
+    Task<List<TestDrive>> GetUpcomingTestDrivesAsync(Guid dealerId);
+}
+
+public interface ISalesContractRepository : IRepository<SalesContract>
+{
+    Task<SalesContract?> GetByOrderIdAsync(Guid orderId);
+    Task<SalesContract?> GetByContractNumberAsync(string contractNumber);
+}
+
 public interface IUnitOfWork : IDisposable
 {
     IUserRepository Users { get; }
@@ -79,5 +142,14 @@ public interface IUnitOfWork : IDisposable
     IDealerStaffRepository DealerStaff { get; }
     IDealerContractRepository DealerContracts { get; }
     IDealerDebtRepository DealerDebts { get; }
+    ICustomerRepository Customers { get; }
+    IQuotationRepository Quotations { get; }
+    IOrderRepository Orders { get; }
+    IPaymentRepository Payments { get; }
+    IInstallmentPlanRepository InstallmentPlans { get; }
+    IVehicleRequestRepository VehicleRequests { get; }
+    IPromotionRepository Promotions { get; }
+    ITestDriveRepository TestDrives { get; }
+    ISalesContractRepository SalesContracts { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

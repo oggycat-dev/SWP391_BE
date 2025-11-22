@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CleanArchitectureTemplate.API.Middlewares;
+using CleanArchitectureTemplate.API.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -64,6 +65,9 @@ public static class DependencyInjection
                 }
             };
         });
+
+        // Add Authorization Policies
+        services.AddAuthorizationPolicies();
         
         return services;
     }

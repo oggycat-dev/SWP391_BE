@@ -9,6 +9,7 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.Upda
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.DeleteVehicleVariant;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleVariants;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleVariantById;
+using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.CompareVehicles;
 
 namespace CleanArchitectureTemplate.API.Controllers.CMS.Vehicles;
 
@@ -43,6 +44,20 @@ public class VehicleVariantsController : ControllerBase
         var query = new GetVehicleVariantByIdQuery { Id = id };
         var result = await _mediator.Send(query);
         var response = ApiResponse<VehicleVariantDto>.Ok(result, "Vehicle variant retrieved successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Compare multiple vehicle variants
+    /// </summary>
+    [HttpGet("compare")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<List<VehicleVariantDto>>>> CompareVehicles(
+        [FromQuery] List<Guid> variantIds)
+    {
+        var query = new CompareVehiclesQuery { VariantIds = variantIds };
+        var result = await _mediator.Send(query);
+        var response = ApiResponse<List<VehicleVariantDto>>.Ok(result, "Vehicle comparison retrieved successfully");
         return Ok(response);
     }
 

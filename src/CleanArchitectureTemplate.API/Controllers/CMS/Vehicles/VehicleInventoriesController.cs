@@ -9,6 +9,7 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.Upda
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.AllocateVehicle;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventories;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventoryById;
+using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetCentralInventory;
 
 namespace CleanArchitectureTemplate.API.Controllers.CMS.Vehicles;
 
@@ -34,6 +35,24 @@ public class VehicleInventoriesController : ControllerBase
     {
         var result = await _mediator.Send(query);
         var response = ApiResponse<PaginatedResult<VehicleInventoryDto>>.Ok(result, "Vehicle inventories retrieved successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get central warehouse inventory (EVM)
+    /// </summary>
+    [HttpGet("central")]
+    public async Task<ActionResult<ApiResponse<List<VehicleInventoryDto>>>> GetCentralInventory(
+        [FromQuery] Guid? vehicleVariantId,
+        [FromQuery] string? status)
+    {
+        var query = new GetCentralInventoryQuery
+        {
+            VehicleVariantId = vehicleVariantId,
+            Status = status
+        };
+        var result = await _mediator.Send(query);
+        var response = ApiResponse<List<VehicleInventoryDto>>.Ok(result, "Central inventory retrieved successfully");
         return Ok(response);
     }
 

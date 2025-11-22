@@ -18,13 +18,16 @@ public class VehicleRequest : BaseEntity
     public DateTime RequestDate { get; set; }
     public DateTime? ApprovedDate { get; set; }
     public DateTime? DeliveredDate { get; set; }
+    public DateTime? ExpectedDeliveryDate { get; set; }
     
     public VehicleRequestStatus Status { get; set; } = VehicleRequestStatus.Pending;
     
     public Guid? ApprovedBy { get; set; }
+    public string RequestReason { get; set; } = string.Empty;
     public string ApprovalNotes { get; set; } = string.Empty;
     public string RejectionReason { get; set; } = string.Empty;
     
+    public string Notes { get; set; } = string.Empty;
     public string RequestNotes { get; set; } = string.Empty;
     
     // Navigation properties
