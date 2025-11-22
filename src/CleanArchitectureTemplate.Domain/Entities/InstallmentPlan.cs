@@ -21,6 +21,12 @@ public class InstallmentPlan : BaseEntity
     public decimal InterestRate { get; set; } // %/year
     public decimal MonthlyPayment { get; set; }
     
+    public decimal PaidAmount { get; set; }
+    public decimal RemainingAmount { get; set; }
+    
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public DateTime NextPaymentDate { get; set; }
     public DateTime FirstPaymentDate { get; set; }
     public DateTime LastPaymentDate { get; set; }
     

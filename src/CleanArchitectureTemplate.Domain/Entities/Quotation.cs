@@ -22,7 +22,9 @@ public class Quotation : BaseEntity
     public decimal PromotionDiscount { get; set; }
     public decimal TaxAmount { get; set; }
     public decimal QuotedPrice { get; set; }
+    public decimal TotalAmount { get; set; } // Final total after all calculations
     
+    public DateTime QuotationDate { get; set; }
     public DateTime ValidUntil { get; set; }
     public QuotationStatus Status { get; set; } = QuotationStatus.Draft;
     

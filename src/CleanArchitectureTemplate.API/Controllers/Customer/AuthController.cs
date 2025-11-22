@@ -8,13 +8,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CleanArchitectureTemplate.API.Controllers.API;
+namespace CleanArchitectureTemplate.API.Controllers.Customer;
 
 /// <summary>
-/// Authentication controller
+/// Customer authentication API
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/customer/auth")]
+[ApiExplorerSettings(GroupName = "customer")]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -32,14 +33,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Register a new user account
+    /// Register a new customer account
     /// </summary>
-    /// <param name="request">Registration information</param>
-    /// <returns>Created user information</returns>
     [HttpPost("register")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<UserDto>>> Register([FromBody] RegisterRequest request)
     {
         var command = new CreateUserCommand
@@ -49,13 +46,13 @@ public class AuthController : ControllerBase
             Password = request.Password,
             FirstName = request.FirstName,
             LastName = request.LastName,
-            Role = UserRole.Customer.ToString() // Default role for registration
+            Role = UserRole.Customer.ToString()
         };
 
         var result = await _mediator.Send(command);
         if (result.Success && result.Data != null)
         {
-            var response = ApiResponse<UserDto>.Created(result.Data, "User registered successfully");
+            var response = ApiResponse<UserDto>.Created(result.Data, "Customer registered successfully");
             return StatusCode(response.StatusCode, response);
         }
         
@@ -64,14 +61,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Login to the system
+    /// Customer login
     /// </summary>
-    /// <param name="request">Login credentials (username is email address)</param>
-    /// <returns>JWT tokens</returns>
     [HttpPost("login")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<ApiResponse<LoginResponse>>> Login([FromBody] LoginRequest request)
     {
         var loginResponse = await _authService.LoginAsync(request);
@@ -80,14 +73,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Refresh access token using refresh token
+    /// Refresh access token
     /// </summary>
-    /// <param name="request">Refresh token</param>
-    /// <returns>New JWT tokens</returns>
     [HttpPost("refresh-token")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<ApiResponse<LoginResponse>>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         var loginResponse = await _authService.RefreshTokenAsync(request);
@@ -96,13 +85,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Logout from the system
+    /// Customer logout
     /// </summary>
-    /// <returns>Success message</returns>
     [HttpPost("logout")]
-    [Authorize]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [Authorize(Roles = "Customer")]
     public async Task<ActionResult<ApiResponse<object>>> Logout()
     {
         await _authService.LogoutAsync(_currentUserService.UserId?.ToString() ?? string.Empty);
