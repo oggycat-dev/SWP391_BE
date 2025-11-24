@@ -18,7 +18,7 @@ namespace CleanArchitectureTemplate.API.Controllers.CMS;
 /// User management controller for CMS
 /// </summary>
 [ApiController]
-[Route("api/cms/[controller]")]
+[Route("api/cms/users")]
 [Authorize(Roles = nameof(UserRole.Admin))]
 public class UsersController : ControllerBase
 {
