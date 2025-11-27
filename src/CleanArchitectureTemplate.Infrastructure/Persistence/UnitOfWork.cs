@@ -24,6 +24,8 @@ public class UnitOfWork : IUnitOfWork
     private IPromotionRepository? _promotionRepository;
     private ITestDriveRepository? _testDriveRepository;
     private ISalesContractRepository? _salesContractRepository;
+    private IDeliveryRepository? _deliveryRepository;
+    private ICustomerFeedbackRepository? _customerFeedbackRepository;
 
     public UnitOfWork(ApplicationDbContext context)
     {
@@ -48,6 +50,8 @@ public class UnitOfWork : IUnitOfWork
     public IPromotionRepository Promotions => _promotionRepository ??= new PromotionRepository(_context);
     public ITestDriveRepository TestDrives => _testDriveRepository ??= new TestDriveRepository(_context);
     public ISalesContractRepository SalesContracts => _salesContractRepository ??= new SalesContractRepository(_context);
+    public IDeliveryRepository Deliveries => _deliveryRepository ??= new DeliveryRepository(_context);
+    public ICustomerFeedbackRepository CustomerFeedbacks => _customerFeedbackRepository ??= new CustomerFeedbackRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

@@ -12,6 +12,9 @@ using CleanArchitectureTemplate.Application.Common.DTOs.Payments;
 using CleanArchitectureTemplate.Application.Common.DTOs.VehicleRequests;
 using CleanArchitectureTemplate.Application.Common.DTOs.TestDrives;
 using CleanArchitectureTemplate.Application.Common.DTOs.Sales;
+using CleanArchitectureTemplate.Application.Common.DTOs.Deliveries;
+using CleanArchitectureTemplate.Application.Common.DTOs.CustomerFeedbacks;
+using CleanArchitectureTemplate.Application.Common.DTOs.Promotions;
 
 namespace CleanArchitectureTemplate.Application.Common.Mappings;
 
@@ -155,5 +158,33 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ContractDate, opt => opt.MapFrom(src => src.SignedDate))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
             .ForMember(dest => dest.SpecialTerms, opt => opt.MapFrom(src => src.Terms));
+
+        // Delivery mappings
+        CreateMap<Delivery, DeliveryDto>()
+            .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Order.OrderNumber))
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Order.Customer.FullName))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Order.Dealer.Name))
+            .ForMember(dest => dest.DeliveryPhotos, opt => opt.MapFrom(src => 
+                string.IsNullOrEmpty(src.DeliveryPhotos) 
+                    ? new List<string>() 
+                    : JsonSerializer.Deserialize<List<string>>(src.DeliveryPhotos, (JsonSerializerOptions)null!) ?? new List<string>()));
+
+        // Customer Feedback mappings
+        CreateMap<CustomerFeedback, CustomerFeedbackDto>()
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName))
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
+            .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Order != null ? src.Order.OrderNumber : null))
+            .ForMember(dest => dest.ResponderName, opt => opt.MapFrom(src => src.Responder != null ? src.Responder.FirstName + " " + src.Responder.LastName : null));
+
+        // Promotion mappings
+        CreateMap<Promotion, PromotionDto>()
+            .ForMember(dest => dest.ApplicableVehicleVariantIds, opt => opt.MapFrom(src => 
+                string.IsNullOrEmpty(src.ApplicableVehicleVariantIds) 
+                    ? new List<Guid>() 
+                    : JsonSerializer.Deserialize<List<Guid>>(src.ApplicableVehicleVariantIds, (JsonSerializerOptions)null!) ?? new List<Guid>()))
+            .ForMember(dest => dest.ApplicableDealerIds, opt => opt.MapFrom(src => 
+                string.IsNullOrEmpty(src.ApplicableDealerIds) 
+                    ? new List<Guid>() 
+                    : JsonSerializer.Deserialize<List<Guid>>(src.ApplicableDealerIds, (JsonSerializerOptions)null!) ?? new List<Guid>()));
     }
 }

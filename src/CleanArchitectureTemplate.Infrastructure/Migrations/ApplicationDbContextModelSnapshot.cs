@@ -698,6 +698,9 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                     b.Property<decimal>("DownPayment")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("FirstPaymentDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -722,6 +725,9 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                     b.Property<decimal>("MonthlyPayment")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTime>("NextPaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("text");
@@ -729,10 +735,19 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("PlanCode")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("RemainingAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("TermMonths")
                         .HasColumnType("integer");
@@ -1141,6 +1156,9 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                     b.Property<decimal>("PromotionDiscount")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTime>("QuotationDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("QuotationNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1153,6 +1171,9 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("TaxAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalAmount")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("ValidUntil")
@@ -1641,6 +1662,9 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                     b.Property<DateTime?>("DeliveredDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("ExpectedDeliveryDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -1649,6 +1673,10 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -1666,6 +1694,10 @@ namespace CleanArchitectureTemplate.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("RequestNotes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestReason")
                         .IsRequired()
                         .HasColumnType("text");
 
