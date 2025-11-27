@@ -1,4 +1,5 @@
 using CleanArchitectureTemplate.Domain.Entities;
+using CleanArchitectureTemplate.Domain.Enums;
 
 namespace CleanArchitectureTemplate.Application.Common.Interfaces;
 
@@ -131,6 +132,23 @@ public interface ISalesContractRepository : IRepository<SalesContract>
     Task<SalesContract?> GetByContractNumberAsync(string contractNumber);
 }
 
+public interface IDeliveryRepository : IRepository<Delivery>
+{
+    Task<Delivery?> GetByDeliveryCodeAsync(string deliveryCode);
+    Task<Delivery?> GetByOrderIdAsync(Guid orderId);
+    Task<List<Delivery>> GetByDealerIdAsync(Guid dealerId);
+    Task<Delivery?> GetByIdWithDetailsAsync(Guid id);
+}
+
+public interface ICustomerFeedbackRepository : IRepository<CustomerFeedback>
+{
+    Task<List<CustomerFeedback>> GetByCustomerIdAsync(Guid customerId);
+    Task<List<CustomerFeedback>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<CustomerFeedback>> GetByOrderIdAsync(Guid orderId);
+    Task<List<CustomerFeedback>> GetByStatusAsync(FeedbackStatus status);
+    Task<CustomerFeedback?> GetByIdWithDetailsAsync(Guid id);
+}
+
 public interface IUnitOfWork : IDisposable
 {
     IUserRepository Users { get; }
@@ -151,5 +169,7 @@ public interface IUnitOfWork : IDisposable
     IPromotionRepository Promotions { get; }
     ITestDriveRepository TestDrives { get; }
     ISalesContractRepository SalesContracts { get; }
+    IDeliveryRepository Deliveries { get; }
+    ICustomerFeedbackRepository CustomerFeedbacks { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
