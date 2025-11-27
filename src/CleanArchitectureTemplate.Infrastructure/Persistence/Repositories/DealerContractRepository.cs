@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using CleanArchitectureTemplate.Application.Common.Interfaces;
 using CleanArchitectureTemplate.Domain.Entities;
 using CleanArchitectureTemplate.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitectureTemplate.Infrastructure.Persistence.Repositories;
 
@@ -14,7 +14,6 @@ public class DealerContractRepository : Repository<DealerContract>, IDealerContr
     public async Task<DealerContract?> GetByContractNumberAsync(string contractNumber)
     {
         return await _dbSet
-            .Include(dc => dc.Dealer)
             .FirstOrDefaultAsync(dc => dc.ContractNumber == contractNumber);
     }
 
@@ -22,17 +21,18 @@ public class DealerContractRepository : Repository<DealerContract>, IDealerContr
     {
         return await _dbSet
             .Where(dc => dc.DealerId == dealerId)
-            .OrderByDescending(dc => dc.StartDate)
+            .OrderByDescending(dc => dc.CreatedAt)
             .ToListAsync();
     }
 
     public async Task<DealerContract?> GetActiveDealerContractAsync(Guid dealerId)
     {
-        var today = DateTime.UtcNow.Date;
         return await _dbSet
-            .Where(dc => dc.DealerId == dealerId 
-                && dc.StartDate <= today 
-                && dc.EndDate >= today)
+            .Where(dc => dc.DealerId == dealerId && 
+                        dc.Status == DealerContractStatus.Active &&
+                        dc.StartDate <= DateTime.UtcNow &&
+                        dc.EndDate >= DateTime.UtcNow)
+            .OrderByDescending(dc => dc.StartDate)
             .FirstOrDefaultAsync();
     }
 }

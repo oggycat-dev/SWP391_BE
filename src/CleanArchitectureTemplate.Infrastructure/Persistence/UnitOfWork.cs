@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     private IDealerStaffRepository? _dealerStaffRepository;
     private IDealerContractRepository? _dealerContractRepository;
     private IDealerDebtRepository? _dealerDebtRepository;
+    private IDealerDiscountPolicyRepository? _dealerDiscountPolicyRepository;
     private ICustomerRepository? _customerRepository;
     private IQuotationRepository? _quotationRepository;
     private IOrderRepository? _orderRepository;
@@ -41,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
     public IDealerStaffRepository DealerStaff => _dealerStaffRepository ??= new DealerStaffRepository(_context);
     public IDealerContractRepository DealerContracts => _dealerContractRepository ??= new DealerContractRepository(_context);
     public IDealerDebtRepository DealerDebts => _dealerDebtRepository ??= new DealerDebtRepository(_context);
+    public IDealerDiscountPolicyRepository DealerDiscountPolicies => _dealerDiscountPolicyRepository ??= new DealerDiscountPolicyRepository(_context);
     public ICustomerRepository Customers => _customerRepository ??= new CustomerRepository(_context);
     public IQuotationRepository Quotations => _quotationRepository ??= new QuotationRepository(_context);
     public IOrderRepository Orders => _orderRepository ??= new OrderRepository(_context);
