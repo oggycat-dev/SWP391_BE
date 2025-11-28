@@ -126,24 +126,22 @@ public static class SwaggerConfiguration
     /// <returns>Web application</returns>
     public static WebApplication UseSwaggerConfiguration(this WebApplication app, IWebHostEnvironment environment)
     {
-        if (environment.IsDevelopment())
+        // Enable Swagger in all environments (including Production for demo)
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                // CMS API endpoint (Admin & EVM)
-                c.SwaggerEndpoint("/swagger/cms/swagger.json", "CMS API v1");
-                
-                // Dealer API endpoint
-                c.SwaggerEndpoint("/swagger/dealer/swagger.json", "Dealer API v1");
-                
-                // Customer API endpoint
-                c.SwaggerEndpoint("/swagger/customer/swagger.json", "Customer API v1");
-                
-                c.RoutePrefix = string.Empty;
-                c.DisplayRequestDuration();
-            });
-        }
+            // CMS API endpoint (Admin & EVM)
+            c.SwaggerEndpoint("/swagger/cms/swagger.json", "CMS API v1");
+            
+            // Dealer API endpoint
+            c.SwaggerEndpoint("/swagger/dealer/swagger.json", "Dealer API v1");
+            
+            // Customer API endpoint
+            c.SwaggerEndpoint("/swagger/customer/swagger.json", "Customer API v1");
+            
+            c.RoutePrefix = "swagger";
+            c.DisplayRequestDuration();
+        });
 
         return app;
     }
