@@ -90,9 +90,9 @@ public class MappingProfile : Profile
 
         // Dealer Staff mappings
         CreateMap<DealerStaff, DealerStaffDto>()
-            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+            .ForMember(dest => dest.DealerName, opt => opt.Ignore())
+            .ForMember(dest => dest.UserName, opt => opt.Ignore())
+            .ForMember(dest => dest.UserEmail, opt => opt.Ignore());
 
         // Dealer Contract mappings
         CreateMap<DealerContract, DealerContractDto>()
@@ -101,11 +101,7 @@ public class MappingProfile : Profile
 
         // Dealer Debt mappings
         CreateMap<DealerDebt, DealerDebtDto>()
-            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Dealer.Name))
-            .ForMember(dest => dest.DebtType, opt => opt.MapFrom(src => "Dealer Debt"))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.TotalDebt))
-            .ForMember(dest => dest.RemainingAmount, opt => opt.MapFrom(src => src.TotalDebt - src.PaidAmount));
+            .ForMember(dest => dest.DealerName, opt => opt.Ignore());
 
         // Customer mappings
         CreateMap<Customer, CustomerDto>();
@@ -186,5 +182,10 @@ public class MappingProfile : Profile
                 string.IsNullOrEmpty(src.ApplicableDealerIds) 
                     ? new List<Guid>() 
                     : JsonSerializer.Deserialize<List<Guid>>(src.ApplicableDealerIds, (JsonSerializerOptions)null!) ?? new List<Guid>()));
+
+        // Dealer Discount Policy mappings
+        CreateMap<DealerDiscountPolicy, DealerDiscountPolicyDto>()
+            .ForMember(dest => dest.DealerName, opt => opt.Ignore())
+            .ForMember(dest => dest.VehicleVariantName, opt => opt.Ignore());
     }
 }

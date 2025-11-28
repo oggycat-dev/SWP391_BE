@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using CleanArchitectureTemplate.Application.Common.Interfaces;
 using CleanArchitectureTemplate.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitectureTemplate.Infrastructure.Persistence.Repositories;
 
@@ -13,25 +13,27 @@ public class DealerStaffRepository : Repository<DealerStaff>, IDealerStaffReposi
     public async Task<List<DealerStaff>> GetByDealerIdAsync(Guid dealerId)
     {
         return await _dbSet
-            .Where(ds => ds.DealerId == dealerId)
             .Include(ds => ds.User)
             .Include(ds => ds.Dealer)
+            .Where(ds => ds.DealerId == dealerId)
+            .OrderByDescending(ds => ds.IsActive)
+            .ThenBy(ds => ds.User.FirstName)
             .ToListAsync();
     }
 
     public async Task<DealerStaff?> GetByUserIdAsync(Guid userId)
     {
         return await _dbSet
-            .Include(ds => ds.Dealer)
             .Include(ds => ds.User)
+            .Include(ds => ds.Dealer)
             .FirstOrDefaultAsync(ds => ds.UserId == userId && ds.IsActive);
     }
 
     public async Task<DealerStaff?> GetByIdWithDetailsAsync(Guid id)
     {
         return await _dbSet
-            .Include(ds => ds.Dealer)
             .Include(ds => ds.User)
+            .Include(ds => ds.Dealer)
             .FirstOrDefaultAsync(ds => ds.Id == id);
     }
 }

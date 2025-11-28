@@ -149,6 +149,13 @@ public interface ICustomerFeedbackRepository : IRepository<CustomerFeedback>
     Task<CustomerFeedback?> GetByIdWithDetailsAsync(Guid id);
 }
 
+public interface IDealerDiscountPolicyRepository : IRepository<DealerDiscountPolicy>
+{
+    Task<List<DealerDiscountPolicy>> GetByDealerIdAsync(Guid dealerId);
+    Task<List<DealerDiscountPolicy>> GetActivePolicesAsync();
+    Task<List<DealerDiscountPolicy>> GetByVehicleVariantIdAsync(Guid vehicleVariantId);
+}
+
 public interface IUnitOfWork : IDisposable
 {
     IUserRepository Users { get; }
@@ -160,6 +167,7 @@ public interface IUnitOfWork : IDisposable
     IDealerStaffRepository DealerStaff { get; }
     IDealerContractRepository DealerContracts { get; }
     IDealerDebtRepository DealerDebts { get; }
+    IDealerDiscountPolicyRepository DealerDiscountPolicies { get; }
     ICustomerRepository Customers { get; }
     IQuotationRepository Quotations { get; }
     IOrderRepository Orders { get; }
