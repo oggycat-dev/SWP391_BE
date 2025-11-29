@@ -58,7 +58,7 @@ public class VehicleModelsController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<VehicleModelDto>>> CreateVehicleModel(
-        [FromBody] CreateVehicleModelCommand command)
+        [FromForm] CreateVehicleModelCommand command)
     {
         var result = await _mediator.Send(command);
         var response = ApiResponse<VehicleModelDto>.Created(result, "Vehicle model created successfully");
@@ -72,7 +72,7 @@ public class VehicleModelsController : ControllerBase
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<VehicleModelDto>>> UpdateVehicleModel(
         Guid id,
-        [FromBody] UpdateVehicleModelCommand command)
+        [FromForm] UpdateVehicleModelCommand command)
     {
         if (id != command.Id)
         {

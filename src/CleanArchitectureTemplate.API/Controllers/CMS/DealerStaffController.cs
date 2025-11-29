@@ -5,7 +5,9 @@ using CleanArchitectureTemplate.Application.Common.DTOs;
 using CleanArchitectureTemplate.Application.Common.DTOs.Dealers;
 using CleanArchitectureTemplate.Application.Features.DealerStaff.Commands.CreateDealerStaff;
 using CleanArchitectureTemplate.Application.Features.DealerStaff.Commands.UpdateDealerStaff;
+using CleanArchitectureTemplate.Application.Features.DealerStaff.Commands.DeleteDealerStaff;
 using CleanArchitectureTemplate.Application.Features.DealerStaff.Queries.GetDealerStaff;
+using CleanArchitectureTemplate.Application.Features.DealerStaff.Queries.GetDealerStaffById;
 
 namespace CleanArchitectureTemplate.API.Controllers.CMS;
 
@@ -35,6 +37,18 @@ public class DealerStaffController : ControllerBase
         var query = new GetDealerStaffQuery { DealerId = dealerId };
         var result = await _mediator.Send(query);
         var response = ApiResponse<List<DealerStaffDto>>.Ok(result, "Dealer staff retrieved successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get dealer staff by ID
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ApiResponse<DealerStaffDto>>> GetDealerStaffById(Guid id)
+    {
+        var query = new GetDealerStaffByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+        var response = ApiResponse<DealerStaffDto>.Ok(result, "Dealer staff retrieved successfully");
         return Ok(response);
     }
 
@@ -69,6 +83,18 @@ public class DealerStaffController : ControllerBase
         
         var result = await _mediator.Send(command);
         var response = ApiResponse<DealerStaffDto>.Ok(result, "Staff member updated successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Remove staff member from dealer
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteDealerStaff(Guid id)
+    {
+        var command = new DeleteDealerStaffCommand { Id = id };
+        var result = await _mediator.Send(command);
+        var response = ApiResponse<bool>.Ok(result, "Staff member removed successfully");
         return Ok(response);
     }
 }

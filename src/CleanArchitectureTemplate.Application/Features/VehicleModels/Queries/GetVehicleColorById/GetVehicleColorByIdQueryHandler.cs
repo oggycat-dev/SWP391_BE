@@ -10,11 +10,13 @@ public class GetVehicleColorByIdQueryHandler : IRequestHandler<GetVehicleColorBy
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IFileService _fileService;
 
-    public GetVehicleColorByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetVehicleColorByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _fileService = fileService;
     }
 
     public async Task<VehicleColorDto> Handle(GetVehicleColorByIdQuery request, CancellationToken cancellationToken)
@@ -22,6 +24,14 @@ public class GetVehicleColorByIdQueryHandler : IRequestHandler<GetVehicleColorBy
         var color = await _unitOfWork.VehicleColors.GetByIdWithVariantAsync(request.Id)
             ?? throw new NotFoundException($"Vehicle color with ID {request.Id} not found");
 
-        return _mapper.Map<VehicleColorDto>(color);
+        var dto = _mapper.Map<VehicleColorDto>(color);
+        
+        // Convert relative path to full URL
+        if (!string.IsNullOrEmpty(dto.ImageUrl))
+        {
+            dto = dto with { ImageUrl = _fileService.GetFileUrl(dto.ImageUrl) };
+        }
+        
+        return dto;
     }
 }

@@ -6,6 +6,7 @@ using CleanArchitectureTemplate.Application.Common.DTOs.Dealers;
 using CleanArchitectureTemplate.Application.Common.Models;
 using CleanArchitectureTemplate.Application.Features.Dealers.Commands.CreateDealer;
 using CleanArchitectureTemplate.Application.Features.Dealers.Commands.UpdateDealer;
+using CleanArchitectureTemplate.Application.Features.Dealers.Commands.DeleteDealer;
 using CleanArchitectureTemplate.Application.Features.Dealers.Queries.GetDealers;
 using CleanArchitectureTemplate.Application.Features.Dealers.Queries.GetDealerById;
 
@@ -80,6 +81,19 @@ public class DealersController : ControllerBase
 
         var result = await _mediator.Send(command);
         var response = ApiResponse<DealerDto>.Ok(result, "Dealer updated successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete (soft delete) dealer
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteDealer(Guid id)
+    {
+        var command = new DeleteDealerCommand { Id = id };
+        var result = await _mediator.Send(command);
+        var response = ApiResponse<bool>.Ok(result, "Dealer deleted successfully");
         return Ok(response);
     }
 }

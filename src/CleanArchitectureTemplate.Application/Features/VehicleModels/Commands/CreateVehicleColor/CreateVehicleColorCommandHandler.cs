@@ -11,11 +11,13 @@ public class CreateVehicleColorCommandHandler : IRequestHandler<CreateVehicleCol
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IFileService _fileService;
 
-    public CreateVehicleColorCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public CreateVehicleColorCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _fileService = fileService;
     }
 
     public async Task<VehicleColorDto> Handle(CreateVehicleColorCommand request, CancellationToken cancellationToken)
@@ -29,6 +31,14 @@ public class CreateVehicleColorCommandHandler : IRequestHandler<CreateVehicleCol
             throw new ValidationException("Vehicle color with this code already exists");
         }
 
+        // Upload image if provided
+        string imageUrl = string.Empty;
+        if (request.Image != null)
+        {
+            var uploadResult = await _fileService.UploadFileAsync(request.Image, "vehicles/colors");
+            imageUrl = uploadResult.FilePath; // Store relative path
+        }
+
         var color = new VehicleColor
         {
             Id = Guid.NewGuid(),
@@ -36,7 +46,7 @@ public class CreateVehicleColorCommandHandler : IRequestHandler<CreateVehicleCol
             ColorName = request.ColorName,
             ColorCode = request.ColorCode,
             AdditionalPrice = request.AdditionalPrice,
-            ImageUrl = request.ImageUrl ?? string.Empty,
+            ImageUrl = imageUrl,
             IsActive = true
         };
 
@@ -44,6 +54,14 @@ public class CreateVehicleColorCommandHandler : IRequestHandler<CreateVehicleCol
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         color = await _unitOfWork.VehicleColors.GetByIdWithVariantAsync(color.Id);
-        return _mapper.Map<VehicleColorDto>(color!);
+        var dto = _mapper.Map<VehicleColorDto>(color!);
+        
+        // Convert relative path to full URL
+        if (!string.IsNullOrEmpty(dto.ImageUrl))
+        {
+            dto = dto with { ImageUrl = _fileService.GetFileUrl(dto.ImageUrl) };
+        }
+        
+        return dto;
     }
 }

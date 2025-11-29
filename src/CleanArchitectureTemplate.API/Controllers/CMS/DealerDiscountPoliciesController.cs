@@ -5,7 +5,9 @@ using CleanArchitectureTemplate.Application.Common.DTOs;
 using CleanArchitectureTemplate.Application.Common.DTOs.Dealers;
 using CleanArchitectureTemplate.Application.Features.DealerDiscountPolicies.Commands.CreateDealerDiscountPolicy;
 using CleanArchitectureTemplate.Application.Features.DealerDiscountPolicies.Commands.UpdateDealerDiscountPolicy;
+using CleanArchitectureTemplate.Application.Features.DealerDiscountPolicies.Commands.DeleteDealerDiscountPolicy;
 using CleanArchitectureTemplate.Application.Features.DealerDiscountPolicies.Queries.GetDealerDiscountPolicies;
+using CleanArchitectureTemplate.Application.Features.DealerDiscountPolicies.Queries.GetDealerDiscountPolicyById;
 
 namespace CleanArchitectureTemplate.API.Controllers.CMS;
 
@@ -45,6 +47,18 @@ public class DealerDiscountPoliciesController : ControllerBase
     }
 
     /// <summary>
+    /// Get dealer discount policy by ID
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ApiResponse<DealerDiscountPolicyDto>>> GetDealerDiscountPolicyById(Guid id)
+    {
+        var query = new GetDealerDiscountPolicyByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+        var response = ApiResponse<DealerDiscountPolicyDto>.Ok(result, "Dealer discount policy retrieved successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Create new dealer discount policy
     /// </summary>
     [HttpPost]
@@ -78,6 +92,18 @@ public class DealerDiscountPoliciesController : ControllerBase
         
         var result = await _mediator.Send(command);
         var response = ApiResponse<DealerDiscountPolicyDto>.Ok(result, "Dealer discount policy updated successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete (deactivate) dealer discount policy
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteDealerDiscountPolicy(Guid id)
+    {
+        var command = new DeleteDealerDiscountPolicyCommand { Id = id };
+        var result = await _mediator.Send(command);
+        var response = ApiResponse<bool>.Ok(result, "Dealer discount policy deleted successfully");
         return Ok(response);
     }
 }

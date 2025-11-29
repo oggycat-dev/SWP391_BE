@@ -49,7 +49,7 @@ public class VehicleColorsController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<VehicleColorDto>>> CreateVehicleColor(
-        [FromBody] CreateVehicleColorCommand command)
+        [FromForm] CreateVehicleColorCommand command)
     {
         var result = await _mediator.Send(command);
         var response = ApiResponse<VehicleColorDto>.Created(result, "Vehicle color created successfully");
@@ -60,7 +60,7 @@ public class VehicleColorsController : ControllerBase
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<VehicleColorDto>>> UpdateVehicleColor(
         Guid id,
-        [FromBody] UpdateVehicleColorCommand command)
+        [FromForm] UpdateVehicleColorCommand command)
     {
         if (id != command.Id)
         {

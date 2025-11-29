@@ -60,6 +60,24 @@ public static class EnvironmentExtensions
         // 2. Environment variables (highest priority - overrides appsettings)
         builder.Configuration.AddEnvironmentVariables();
 
+        // 3. Map additional storage settings from environment variables
+        MapStorageSettings(builder.Configuration);
+
         return builder;
+    }
+
+    private static void MapStorageSettings(IConfiguration configuration)
+    {
+        // Storage Settings
+        configuration["Storage:ProviderType"] = 
+            Environment.GetEnvironmentVariable("Storage__ProviderType") ?? "LocalStorage";
+        configuration["Storage:BaseUrl"] = 
+            Environment.GetEnvironmentVariable("Storage__BaseUrl") ?? string.Empty;
+            
+        // Local Storage Settings
+        configuration["Storage:LocalStorage:RootPath"] = 
+            Environment.GetEnvironmentVariable("Storage__LocalStorage__RootPath") ?? "wwwroot/uploads";
+        configuration["Storage:LocalStorage:MaxFileSize"] = 
+            Environment.GetEnvironmentVariable("Storage__LocalStorage__MaxFileSize") ?? "524288000";
     }
 }
