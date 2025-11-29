@@ -11,11 +11,13 @@ public class GetVehicleModelsQueryHandler : IRequestHandler<GetVehicleModelsQuer
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IFileService _fileService;
 
-    public GetVehicleModelsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetVehicleModelsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _fileService = fileService;
     }
 
     public async Task<PaginatedResult<VehicleModelDto>> Handle(GetVehicleModelsQuery request, CancellationToken cancellationToken)
@@ -56,6 +58,12 @@ public class GetVehicleModelsQueryHandler : IRequestHandler<GetVehicleModelsQuer
             .ToList();
 
         var dtos = _mapper.Map<List<VehicleModelDto>>(items);
+        
+        // Convert relative paths to full URLs for all items
+        dtos = dtos.Select(dto => dto with
+        {
+            ImageUrls = dto.ImageUrls.Select(url => _fileService.GetFileUrl(url)).ToList()
+        }).ToList();
         
         return new PaginatedResult<VehicleModelDto>
         {

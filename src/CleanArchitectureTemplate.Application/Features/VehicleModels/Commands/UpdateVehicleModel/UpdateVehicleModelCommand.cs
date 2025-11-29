@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using CleanArchitectureTemplate.Application.Common.DTOs.Vehicles;
 
 namespace CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.UpdateVehicleModel;
@@ -12,7 +13,8 @@ public class UpdateVehicleModelCommand : IRequest<VehicleModelDto>
     public int Year { get; set; }
     public decimal BasePrice { get; set; }
     public string Description { get; set; } = string.Empty;
-    public List<string> ImageUrls { get; set; } = new();
-    public string BrochureUrl { get; set; } = string.Empty;
+    public List<IFormFile>? NewImages { get; set; }
+    public List<string>? ExistingImageUrls { get; set; }
+    public string? BrochureUrl { get; set; }
     public bool IsActive { get; set; }
 }

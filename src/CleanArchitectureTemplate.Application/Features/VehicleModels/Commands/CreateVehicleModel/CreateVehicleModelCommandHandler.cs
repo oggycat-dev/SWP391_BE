@@ -13,11 +13,16 @@ public class CreateVehicleModelCommandHandler : IRequestHandler<CreateVehicleMod
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IFileService _fileService;
 
-    public CreateVehicleModelCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public CreateVehicleModelCommandHandler(
+        IUnitOfWork unitOfWork, 
+        IMapper mapper,
+        IFileService fileService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _fileService = fileService;
     }
 
     public async Task<VehicleModelDto> Handle(CreateVehicleModelCommand request, CancellationToken cancellationToken)
@@ -35,6 +40,17 @@ public class CreateVehicleModelCommandHandler : IRequestHandler<CreateVehicleMod
             throw new ValidationException("Invalid vehicle category");
         }
 
+        // Upload images
+        var imageUrls = new List<string>();
+        if (request.Images != null && request.Images.Any())
+        {
+            foreach (var image in request.Images)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(image, "vehicles/models");
+                imageUrls.Add(uploadResult.FilePath);
+            }
+        }
+
         // Create vehicle model
         var vehicleModel = new VehicleModel
         {
@@ -46,14 +62,22 @@ public class CreateVehicleModelCommandHandler : IRequestHandler<CreateVehicleMod
             Year = request.Year,
             BasePrice = request.BasePrice,
             Description = request.Description,
-            ImageUrls = JsonSerializer.Serialize(request.ImageUrls),
-            BrochureUrl = request.BrochureUrl,
+            ImageUrls = JsonSerializer.Serialize(imageUrls),
+            BrochureUrl = request.BrochureUrl ?? string.Empty,
             IsActive = true
         };
 
         await _unitOfWork.VehicleModels.AddAsync(vehicleModel);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<VehicleModelDto>(vehicleModel);
+        var dto = _mapper.Map<VehicleModelDto>(vehicleModel);
+        
+        // Convert relative paths to full URLs
+        dto = dto with
+        {
+            ImageUrls = dto.ImageUrls.Select(url => _fileService.GetFileUrl(url)).ToList()
+        };
+        
+        return dto;
     }
 }

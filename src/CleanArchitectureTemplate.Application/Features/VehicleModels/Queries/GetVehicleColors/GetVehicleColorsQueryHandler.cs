@@ -10,11 +10,13 @@ public class GetVehicleColorsQueryHandler : IRequestHandler<GetVehicleColorsQuer
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IFileService _fileService;
 
-    public GetVehicleColorsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetVehicleColorsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _fileService = fileService;
     }
 
     public async Task<PaginatedResult<VehicleColorDto>> Handle(GetVehicleColorsQuery request, CancellationToken cancellationToken)
@@ -47,6 +49,16 @@ public class GetVehicleColorsQueryHandler : IRequestHandler<GetVehicleColorsQuer
             .ToList();
 
         var dtos = _mapper.Map<List<VehicleColorDto>>(items);
+        
+        // Convert relative paths to full URLs for all items
+        dtos = dtos.Select(dto => 
+        {
+            if (!string.IsNullOrEmpty(dto.ImageUrl))
+            {
+                return dto with { ImageUrl = _fileService.GetFileUrl(dto.ImageUrl) };
+            }
+            return dto;
+        }).ToList();
 
         return new PaginatedResult<VehicleColorDto>
         {

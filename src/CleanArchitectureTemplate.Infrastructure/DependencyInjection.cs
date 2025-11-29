@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CleanArchitectureTemplate.Application.Common.Interfaces;
+using CleanArchitectureTemplate.Application.Common.Models;
 using CleanArchitectureTemplate.Infrastructure.Persistence;
 using CleanArchitectureTemplate.Infrastructure.Services;
 using CleanArchitectureTemplate.Domain.Entities;
@@ -28,6 +29,9 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
+        // Configure storage settings
+        services.Configure<StorageSettings>(configuration.GetSection("Storage"));
+
         // Register interfaces
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -35,6 +39,8 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IStorageService, LocalStorageService>();
+        services.AddScoped<IFileService, FileService>();
 
         // Add hosted services
         services.AddHostedService<AdminAccountInitializer>();
