@@ -10,6 +10,7 @@ public record UpdateUserCommand : IRequest<UserDto>
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
     public required string Email { get; init; }
+    public string? PhoneNumber { get; init; }
     public required UserRole Role { get; init; }
     public required bool IsActive { get; init; }
 }

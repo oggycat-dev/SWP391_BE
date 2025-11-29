@@ -9,6 +9,7 @@ public record UserDto
     public required string Email { get; init; }
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
+    public string? PhoneNumber { get; init; }
     public required UserRole Role { get; init; }
     public required bool IsActive { get; init; }
     public DateTime? LastLoginDate { get; init; }
@@ -23,6 +24,7 @@ public record CreateUserRequest
     public required string Password { get; init; }
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
+    public string? PhoneNumber { get; init; }
     public required UserRole Role { get; init; }
 }
 
@@ -31,6 +33,7 @@ public record UpdateUserRequest
     public required string FirstName { get; init; }
     public required string LastName { get; init; }
     public required string Email { get; init; }
+    public string? PhoneNumber { get; init; }
     public required UserRole Role { get; init; }
     public required bool IsActive { get; init; }
 }

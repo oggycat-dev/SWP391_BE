@@ -14,6 +14,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Kestrel for Azure App Service
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Azure App Service uses PORT environment variable
+    var port = Environment.GetEnvironmentVariable("PORT");
+    if (!string.IsNullOrEmpty(port))
+    {
+        options.ListenAnyIP(int.Parse(port));
+    }
+});
+
 // Add logging configuration
 builder.AddLoggingConfiguration();
 
