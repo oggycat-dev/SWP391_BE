@@ -39,6 +39,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
         user.Email = email;
+        user.PhoneNumber = request.PhoneNumber;
         user.Role = request.Role;
         user.IsActive = request.IsActive;
 
