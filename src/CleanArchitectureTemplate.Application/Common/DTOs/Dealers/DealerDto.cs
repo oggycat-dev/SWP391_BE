@@ -10,6 +10,7 @@ public class DealerDto
     public string District { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string? ManagerName { get; set; }
     public string Status { get; set; } = string.Empty;
     public decimal DebtLimit { get; set; }
     public decimal CurrentDebt { get; set; }

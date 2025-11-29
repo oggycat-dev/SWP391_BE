@@ -96,4 +96,25 @@ public class DealersController : ControllerBase
         var response = ApiResponse<bool>.Ok(result, "Dealer deleted successfully");
         return Ok(response);
     }
+
+    /// <summary>
+    /// Get dealer debt summary
+    /// </summary>
+    [HttpGet("{id:guid}/debt")]
+    public async Task<ActionResult<ApiResponse<object>>> GetDealerDebt(Guid id)
+    {
+        var query = new GetDealerByIdQuery { Id = id };
+        var dealer = await _mediator.Send(query);
+        
+        var summary = new
+        {
+            currentDebt = dealer.CurrentDebt,
+            debtLimit = dealer.DebtLimit,
+            availableCredit = dealer.DebtLimit - dealer.CurrentDebt,
+            overdueAmount = 0m // TODO: Calculate from actual overdue debts if needed
+        };
+        
+        var response = ApiResponse<object>.Ok(summary, "Dealer debt retrieved successfully");
+        return Ok(response);
+    }
 }
