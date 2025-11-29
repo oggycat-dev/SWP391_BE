@@ -86,7 +86,8 @@ public class MappingProfile : Profile
         // Dealer mappings
         CreateMap<Dealer, DealerDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Name));
+            .ForMember(dest => dest.DealerName, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.Region));
 
         // Dealer Staff mappings
         CreateMap<DealerStaff, DealerStaffDto>()

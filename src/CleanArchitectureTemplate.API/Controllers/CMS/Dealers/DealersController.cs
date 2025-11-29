@@ -5,6 +5,7 @@ using CleanArchitectureTemplate.Application.Common.DTOs;
 using CleanArchitectureTemplate.Application.Common.DTOs.Dealers;
 using CleanArchitectureTemplate.Application.Common.Models;
 using CleanArchitectureTemplate.Application.Features.Dealers.Commands.CreateDealer;
+using CleanArchitectureTemplate.Application.Features.Dealers.Commands.UpdateDealer;
 using CleanArchitectureTemplate.Application.Features.Dealers.Queries.GetDealers;
 using CleanArchitectureTemplate.Application.Features.Dealers.Queries.GetDealerById;
 
@@ -61,5 +62,24 @@ public class DealersController : ControllerBase
         var result = await _mediator.Send(command);
         var response = ApiResponse<DealerDto>.Created(result, "Dealer created successfully");
         return CreatedAtAction(nameof(GetDealerById), new { id = result.Id }, response);
+    }
+
+    /// <summary>
+    /// Update dealer information
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin,EVMManager")]
+    public async Task<ActionResult<ApiResponse<DealerDto>>> UpdateDealer(
+        Guid id,
+        [FromBody] UpdateDealerCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest(ApiResponse<DealerDto>.BadRequest("ID mismatch"));
+        }
+
+        var result = await _mediator.Send(command);
+        var response = ApiResponse<DealerDto>.Ok(result, "Dealer updated successfully");
+        return Ok(response);
     }
 }
