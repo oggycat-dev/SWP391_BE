@@ -7,6 +7,7 @@ using CleanArchitectureTemplate.Application.Common.Models;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.CreateVehicleInventory;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.UpdateVehicleInventoryStatus;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.AllocateVehicle;
+using CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.AllocateVehicleToDealer;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventories;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleInventoryById;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetCentralInventory;
@@ -90,6 +91,9 @@ public class VehicleInventoriesController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Allocate vehicle to an order
+    /// </summary>
     [HttpPost("{id:guid}/allocate")]
     [Authorize(Roles = "Admin,EVMStaff")]
     public async Task<ActionResult<ApiResponse<bool>>> AllocateVehicle(
@@ -103,6 +107,31 @@ public class VehicleInventoriesController : ControllerBase
 
         await _mediator.Send(command);
         var response = ApiResponse<bool>.Ok(true, "Vehicle allocated successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Allocate vehicle to dealer (without order) - for vehicle requests
+    /// </summary>
+    [HttpPost("{id:guid}/allocate-to-dealer")]
+    [Authorize(Roles = "Admin,EVMStaff")]
+    public async Task<ActionResult<ApiResponse<bool>>> AllocateVehicleToDealer(
+        Guid id,
+        [FromBody] AllocateVehicleToDealerRequest request)
+    {
+        if (id != request.VehicleInventoryId)
+        {
+            return BadRequest(ApiResponse<bool>.BadRequest("ID mismatch"));
+        }
+
+        var command = new AllocateVehicleToDealerCommand
+        {
+            InventoryId = request.VehicleInventoryId,
+            DealerId = request.DealerId
+        };
+
+        await _mediator.Send(command);
+        var response = ApiResponse<bool>.Ok(true, "Vehicle allocated to dealer successfully");
         return Ok(response);
     }
 }
