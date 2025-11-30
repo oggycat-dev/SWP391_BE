@@ -56,10 +56,25 @@ public class UpdateVehicleModelCommandHandler : IRequestHandler<UpdateVehicleMod
 
         // Combine existing and new images
         var finalImageUrls = new List<string>();
+        
+        // If ExistingImageUrls is provided, use it; otherwise keep old images
         if (request.ExistingImageUrls != null && request.ExistingImageUrls.Any())
         {
+            // Use provided existing image URLs
             finalImageUrls.AddRange(request.ExistingImageUrls);
         }
+        else if (!newImageUrls.Any())
+        {
+            // No new images and no ExistingImageUrls provided -> keep old images
+            finalImageUrls.AddRange(oldImageUrls);
+        }
+        else
+        {
+            // Has new images but no ExistingImageUrls -> keep old images + add new ones
+            finalImageUrls.AddRange(oldImageUrls);
+        }
+        
+        // Always add new images if any
         finalImageUrls.AddRange(newImageUrls);
 
         // Update vehicle model
