@@ -2,9 +2,11 @@ using MediatR;
 using AutoMapper;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using CleanArchitectureTemplate.Application.Common.Interfaces;
 using CleanArchitectureTemplate.Application.Common.DTOs.Vehicles;
 using CleanArchitectureTemplate.Application.Common.Exceptions;
+using CleanArchitectureTemplate.Application.Common.Models;
 using CleanArchitectureTemplate.Domain.Enums;
 
 namespace CleanArchitectureTemplate.Application.Features.VehicleModels.Commands.UpdateVehicleModel;
@@ -15,17 +17,20 @@ public class UpdateVehicleModelCommandHandler : IRequestHandler<UpdateVehicleMod
     private readonly IMapper _mapper;
     private readonly IFileService _fileService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly StorageSettings _storageSettings;
 
     public UpdateVehicleModelCommandHandler(
         IUnitOfWork unitOfWork, 
         IMapper mapper,
         IFileService fileService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IOptions<StorageSettings> storageSettings)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _fileService = fileService;
         _serviceProvider = serviceProvider;
+        _storageSettings = storageSettings.Value;
     }
 
     public async Task<VehicleModelDto> Handle(UpdateVehicleModelCommand request, CancellationToken cancellationToken)
@@ -57,11 +62,12 @@ public class UpdateVehicleModelCommandHandler : IRequestHandler<UpdateVehicleMod
         // Combine existing and new images
         var finalImageUrls = new List<string>();
         
-        // If ExistingImageUrls is provided, use it; otherwise keep old images
+        // If ExistingImageUrls is provided, extract relative paths from full URLs
         if (request.ExistingImageUrls != null && request.ExistingImageUrls.Any())
         {
-            // Use provided existing image URLs
-            finalImageUrls.AddRange(request.ExistingImageUrls);
+            // Extract relative paths from full URLs to avoid duplication
+            var existingRelativePaths = request.ExistingImageUrls.Select(url => ExtractRelativePath(url)).ToList();
+            finalImageUrls.AddRange(existingRelativePaths);
         }
         else if (!newImageUrls.Any())
         {
@@ -91,7 +97,9 @@ public class UpdateVehicleModelCommandHandler : IRequestHandler<UpdateVehicleMod
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Delete old images in background (don't block main flow)
-        var imagesToDelete = oldImageUrls.Except(request.ExistingImageUrls ?? new List<string>()).ToList();
+        // Extract relative paths from existing URLs for comparison
+        var existingRelativePathsForComparison = request.ExistingImageUrls?.Select(url => ExtractRelativePath(url)).ToList() ?? new List<string>();
+        var imagesToDelete = oldImageUrls.Except(existingRelativePathsForComparison).ToList();
         if (imagesToDelete.Any())
         {
             _ = Task.Run(async () =>
@@ -123,5 +131,42 @@ public class UpdateVehicleModelCommandHandler : IRequestHandler<UpdateVehicleMod
         };
         
         return dto;
+    }
+
+    /// <summary>
+    /// Extract relative path from full URL or return as-is if already relative
+    /// </summary>
+    private string ExtractRelativePath(string fileUrlOrPath)
+    {
+        if (string.IsNullOrEmpty(fileUrlOrPath))
+            return string.Empty;
+
+        var baseUrl = _storageSettings.BaseUrl.TrimEnd('/');
+        string relativePath;
+
+        // Check if it's a full URL
+        if (fileUrlOrPath.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
+        {
+            // Extract relative path from full URL
+            relativePath = fileUrlOrPath.Substring(baseUrl.Length).TrimStart('/');
+        }
+        else
+        {
+            // It's already a relative path
+            relativePath = fileUrlOrPath.TrimStart('/');
+        }
+
+        // Remove "uploads/" prefix if present, since we store relative paths without it
+        var rootPath = _storageSettings.LocalStorage.RootPath
+            .Replace("wwwroot/", "")
+            .Replace("wwwroot", "")
+            .TrimStart('/');
+
+        if (!string.IsNullOrEmpty(rootPath) && relativePath.StartsWith(rootPath + "/", StringComparison.OrdinalIgnoreCase))
+        {
+            relativePath = relativePath.Substring(rootPath.Length).TrimStart('/');
+        }
+
+        return relativePath;
     }
 }

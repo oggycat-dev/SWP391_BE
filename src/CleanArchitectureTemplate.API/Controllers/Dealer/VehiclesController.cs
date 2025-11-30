@@ -10,6 +10,8 @@ using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVe
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleVariantById;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetVehicleColors;
 using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.CompareVehicles;
+using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetDealerInventories;
+using CleanArchitectureTemplate.Application.Features.VehicleModels.Queries.GetDealerInventoryById;
 
 namespace CleanArchitectureTemplate.API.Controllers.Dealer;
 
@@ -99,6 +101,30 @@ public class VehiclesController : ControllerBase
     {
         var result = await _mediator.Send(query);
         var response = ApiResponse<PaginatedResult<VehicleColorDto>>.Ok(result, "Vehicle colors retrieved successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get all inventories allocated to this dealer
+    /// </summary>
+    [HttpGet("inventories")]
+    public async Task<ActionResult<ApiResponse<List<VehicleInventoryDto>>>> GetDealerInventories(
+        [FromQuery] GetDealerInventoriesQuery query)
+    {
+        var result = await _mediator.Send(query);
+        var response = ApiResponse<List<VehicleInventoryDto>>.Ok(result, "Dealer inventories retrieved successfully");
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get inventory details by ID (only if allocated to this dealer)
+    /// </summary>
+    [HttpGet("inventories/{id:guid}")]
+    public async Task<ActionResult<ApiResponse<VehicleInventoryDto>>> GetDealerInventoryById(Guid id)
+    {
+        var query = new GetDealerInventoryByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+        var response = ApiResponse<VehicleInventoryDto>.Ok(result, "Dealer inventory retrieved successfully");
         return Ok(response);
     }
 }
