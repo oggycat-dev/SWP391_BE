@@ -11,6 +11,8 @@ using CleanArchitectureTemplate.API.Extensions;
 using Serilog;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,8 +135,19 @@ app.UseGlobalExceptionHandling();
 // Apply Swagger configuration
 app.UseSwaggerConfiguration(app.Environment);
 
-// Add static files middleware
-app.UseStaticFiles();
+// Ensure wwwroot exists
+var wwwrootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+if (!Directory.Exists(wwwrootPath))
+{
+    Directory.CreateDirectory(wwwrootPath);
+}
+
+// Add static files middleware - serve from wwwroot
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(wwwrootPath),
+    RequestPath = ""
+});
 
 if (isProduction)
 {

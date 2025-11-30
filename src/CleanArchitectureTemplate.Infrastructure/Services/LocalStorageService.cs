@@ -18,8 +18,21 @@ public class LocalStorageService : IStorageService
     {
         _storageSettings = storageSettings.Value;
         _webHostEnvironment = webHostEnvironment;
-        _uploadsPath = Path.Combine(_webHostEnvironment.WebRootPath ?? _webHostEnvironment.ContentRootPath, 
-            _storageSettings.LocalStorage.RootPath.Replace("wwwroot/", ""));
+        
+        // Ensure wwwroot exists
+        var webRootPath = _webHostEnvironment.WebRootPath;
+        if (string.IsNullOrEmpty(webRootPath))
+        {
+            webRootPath = Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot");
+            if (!Directory.Exists(webRootPath))
+            {
+                Directory.CreateDirectory(webRootPath);
+            }
+        }
+        
+        // Calculate uploads path: wwwroot/uploads
+        var rootPath = _storageSettings.LocalStorage.RootPath.Replace("wwwroot/", "").Replace("wwwroot", "");
+        _uploadsPath = Path.Combine(webRootPath, rootPath);
         
         // Ensure the uploads directory exists
         if (!Directory.Exists(_uploadsPath))
@@ -112,6 +125,20 @@ public class LocalStorageService : IStorageService
     {
         var baseUrl = _storageSettings.BaseUrl.TrimEnd('/');
         var cleanPath = filePath.TrimStart('/').Replace("\\", "/");
+        
+        // Extract the relative path from RootPath (e.g., "wwwroot/uploads" -> "uploads")
+        // Files are stored in wwwroot/uploads/..., so URL must be /uploads/...
+        var rootPath = _storageSettings.LocalStorage.RootPath
+            .Replace("wwwroot/", "")
+            .Replace("wwwroot", "")
+            .TrimStart('/');
+        
+        // If the path doesn't already start with the root path, prepend it
+        if (!string.IsNullOrEmpty(rootPath) && !cleanPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
+        {
+            cleanPath = $"{rootPath}/{cleanPath}".TrimStart('/');
+        }
+        
         return $"{baseUrl}/{cleanPath}";
     }
 
@@ -174,6 +201,17 @@ public class LocalStorageService : IStorageService
         {
             // It's already a relative path
             relativePath = fileUrlOrPath.TrimStart('/');
+        }
+        
+        // Remove "uploads/" prefix if present, since _uploadsPath already includes it
+        var rootPath = _storageSettings.LocalStorage.RootPath
+            .Replace("wwwroot/", "")
+            .Replace("wwwroot", "")
+            .TrimStart('/');
+        
+        if (!string.IsNullOrEmpty(rootPath) && relativePath.StartsWith(rootPath + "/", StringComparison.OrdinalIgnoreCase))
+        {
+            relativePath = relativePath.Substring(rootPath.Length).TrimStart('/');
         }
         
         return Path.Combine(_uploadsPath, relativePath.Replace("/", "\\"));
